@@ -26,15 +26,18 @@ const {BrowserWindow,session} = require('electron');
 const mainWindow = BrowserWindow.getAllWindows()[0]
 const downloadFile = (async (url, path,headers,progressCallback) => {
   const res = await nodeFetch(url,{ method: 'GET', headers: headers});
-  const fileStream = fs.createWriteStream(path);
   if (res.status ==404)
-    throw {error:true,code:1,source:url, target:path, http_status:res.status,exception:res.statusText, response:await res.text() };
+  throw {error:true,code:1,source:url, target:path, http_status:res.status,exception:res.statusText, response:await res.text() };
   if (!(res.status  >=200 && res.status  <= 299)){
     throw { error:true,code:3,source:url, target:path, http_status:res.status,exception:res.statusText , response:await res.text()} ;
   }
-  const bytes = res.headers.get('content-length') || res.headers.get('Content-Length') || 0
+  if (res.status  ===304){
+    throw { error:true,code:5,source:url, target:path, http_status:res.status,exception:res.statusText , response:await res.text()} ;
+  }
+const bytes = res.headers.get('content-length') || res.headers.get('Content-Length') || 0
 
-  return new Promise((resolve, reject) => {
+const fileStream = fs.createWriteStream(path);
+return new Promise((resolve, reject) => {
      let downloaded = 0; 
      fileStream.on("finish", (a)=>{
       ///if(!fileStream.closed) fileStream.close(); 
