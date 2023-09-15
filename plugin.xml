@@ -21,7 +21,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
     id="cordova-plugin-file-transfer"
-    version="2.0.0-dev">
+    version="2.2.1-dev">
     <name>File Transfer</name>
     <description>Cordova File Transfer Plugin</description>
     <license>Apache 2.0</license>
@@ -69,6 +69,13 @@
         <framework src="AssetsLibrary.framework" />
     </platform>
 
+    <!-- electron -->
+    <platform name="electron">
+        <framework src="src/electron" />
+        <js-module src="www/electron/FileTransfer.js" name="BrowserFileTransfer">
+            <clobbers target="window.FileTransfer" />
+        </js-module>
+    </platform>
     <!-- browser -->
     <platform name="browser">
         <js-module src="www/browser/FileTransfer.js" name="BrowserFileTransfer">
