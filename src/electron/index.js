@@ -54,8 +54,8 @@ return new Promise((resolve, reject) => {
         boolSendJsFeedbackEvery250ms=true;
         setTimeout(()=>{boolSendJsFeedbackEvery250ms=false;},250)
           mainWindow?.webContents?.executeJavaScript(`if(window.${progressCallback})${progressCallback}({loaded:${downloaded},total:${bytes},lengthComputable:true})`).catch((e)=>{
-            console.error("mainWindow.webContents.executeJavaScript[FileDownload]")
-            console.error(e)
+            // console.error("mainWindow.webContents.executeJavaScript[FileDownload]")
+            // console.error(e)
           })
       } );
     });
