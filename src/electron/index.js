@@ -22,10 +22,41 @@
 
 const fs = require('fs');
 const nodeFetch = require("node-fetch");
+const https = require("https");
+const http = require("http");
+const dns = require("dns");
 const {BrowserWindow,session} = require('electron');
+
 const mainWindow = BrowserWindow.getAllWindows()[0]
 const downloadFile = (async (url, path,headers,progressCallback) => {
-  const res = await nodeFetch(url,{ method: 'GET', headers: headers});
+  const res = await nodeFetch(url,{ method: 'GET', headers: headers,agent:(url)=>{
+
+      const options={
+        lookup :function(hostname,options,callback){
+          if (typeof options === "object")
+            options.all = true;
+          else
+            options={family:undefined,hints:0,all:true};
+          dns.lookup(hostname,options,(err,resAdd)=>{
+            if (err)
+              return callback(err, undefined,undefined);
+            const firstIPv6= resAdd.find((res)=>res.family == 6);
+            if (firstIPv6)
+              return callback(null, firstIPv6.address, firstIPv6.family)
+            callback(null, resAdd[0].address, resAdd[0].family)
+          })
+          
+        }
+      }
+      if ( url.protocol ==="https:"){
+        return new https.Agent(options)
+      }else if ( url.protocol ==="http:"){
+        return new http.Agent(options)
+      }
+
+  }});
+
+
   if (res.status ==404)
   throw {error:true,code:1,source:url, target:path, http_status:res.status,exception:res.statusText, response:await res.text() };
   if (!(res.status  >=200 && res.status  <= 299)){
