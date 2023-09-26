@@ -27,7 +27,13 @@ const http = require("http");
 const dns = require("dns");
 const {BrowserWindow,session} = require('electron');
 
-const mainWindow = BrowserWindow.getAllWindows()[0]
+let mainWindow = BrowserWindow.getAllWindows()[0]
+
+const closeMainWindow = async (e)=>{
+  mainWindow=undefined;
+};
+mainWindow.once("close" ,closeMainWindow)
+
 const downloadFile = (async (url, path,headers,progressCallback) => {
   const res = await nodeFetch(url,{ method: 'GET', headers: headers,agent:(url)=>{
 
@@ -58,7 +64,7 @@ const downloadFile = (async (url, path,headers,progressCallback) => {
 
 
   if (res.status ==404)
-  throw {error:true,code:1,source:url, target:path, http_status:res.status,exception:res.statusText, response:await res.text() };
+    throw {error:true,code:1,source:url, target:path, http_status:res.status,exception:res.statusText, response:await res.text() };
   if (!(res.status  >=200 && res.status  <= 299)){
     throw { error:true,code:3,source:url, target:path, http_status:res.status,exception:res.statusText , response:await res.text()} ;
   }
@@ -70,11 +76,15 @@ const bytes = res.headers.get('content-length') || res.headers.get('Content-Leng
 const fileStream = fs.createWriteStream(path);
 return new Promise((resolve, reject) => {
      let downloaded = 0; 
+     
      fileStream.on("finish", (a)=>{
       ///if(!fileStream.closed) fileStream.close(); 
       resolve(a);
+      
        
     });
+      
+
      fileStream.on("error",(e)=>{reject({ error:true,code:0,source:url, target:path, http_status:0,exception:"Fehler beim Schreiben in eine Datei oder eine reservierte Datei." , response:e.message})});
       res.body.pipe(fileStream);
       res.body.on("error", reject);
