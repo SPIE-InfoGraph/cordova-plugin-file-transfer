@@ -65,11 +65,11 @@ const downloadFile = (async (url, path,headers,progressCallback) => {
 
   if (res.status ==404)
     throw {error:true,code:1,source:url, target:path, http_status:res.status,exception:res.statusText, response:await res.text() };
-  if (!(res.status  >=200 && res.status  <= 299)){
-    throw { error:true,code:3,source:url, target:path, http_status:res.status,exception:res.statusText , response:await res.text()} ;
-  }
   if (res.status  ===304){
     throw { error:true,code:5,source:url, target:path, http_status:res.status,exception:res.statusText , response:await res.text()} ;
+  }
+  if (!(res.status  >=200 && res.status  <= 299)){
+    throw { error:true,code:3,source:url, target:path, http_status:res.status,exception:res.statusText , response:await res.text()} ;
   }
 const bytes = res.headers.get('content-length') || res.headers.get('Content-Length') || 0
 
