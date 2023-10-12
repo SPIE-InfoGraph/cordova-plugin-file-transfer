@@ -38,19 +38,22 @@ const downloadFile = (async (url, path,headers,progressCallback) => {
   const res = await nodeFetch(url,{ method: 'GET', headers: headers,agent:(url)=>{
 
       const options={
-        lookup :function(hostname,options,callback){
-          if (typeof options === "object")
-            options.all = true;
-          else
-            options={family:undefined,hints:0,all:true};
-          dns.lookup(hostname,options,(err,resAdd)=>{
-            if (err)
-              return callback(err, undefined,undefined);
-            const firstIPv6= resAdd.find((res)=>res.family == 6);
-            if (firstIPv6)
-              return callback(null, firstIPv6.address, firstIPv6.family)
-            callback(null, resAdd[0].address, resAdd[0].family)
-          })
+        lookup : async (hostname,options,callback)=>{
+          const e= await  session.defaultSession.resolveHost(hostname);
+          callback(null,e.endpoints[0].address,e.endpoints[0].family==="ipv6"?6:4 );
+
+          // if (typeof options === "object")
+          //   options.all = true;
+          // else
+          //   options={family:undefined,hints:0,all:true};
+          // dns.lookup(hostname,options,(err,resAdd)=>{
+          //   if (err)
+          //     return callback(err, undefined,undefined);
+          //   const firstIPv6= resAdd.find((res)=>res.family == 6);
+          //   if (firstIPv6)
+          //     return callback(null, firstIPv6.address, firstIPv6.family)
+          //   callback(null, resAdd[0].address, resAdd[0].family)
+          // })
           
         }
       }
