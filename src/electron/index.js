@@ -25,6 +25,7 @@ const nodeFetch = require("node-fetch");
 const https = require("https");
 const http = require("http");
 const dns = require("dns");
+const upNode18= process.versions.node.split('.').map(Number)[0] >18;
 const {BrowserWindow,session} = require('electron');
 
 let mainWindow = BrowserWindow.getAllWindows()[0]
@@ -40,7 +41,12 @@ const downloadFile = (async (url, path,headers,progressCallback) => {
       const options={
         lookup : async (hostname,options,callback)=>{
           const e= await  session.defaultSession.resolveHost(hostname);
-          callback(null,e.endpoints[0].address,e.endpoints[0].family==="ipv6"?6:4 );
+          if(upNode18){
+            callback(null,[{address:e.endpoints[0].address,family:e.endpoints[0].family==="ipv6"?6:4}]);
+          }
+          else{
+            callback(null,e.endpoints[0].address,e.endpoints[0].family==="ipv6"?6:4 );
+          }
 
           // if (typeof options === "object")
           //   options.all = true;
