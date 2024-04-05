@@ -1,6 +1,6 @@
 {
     "name": "cordova-plugin-file-download-electron",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "description": "Electron Support for Cordova Download Plugin",
     "main": "index.js",
     "keywords": [
